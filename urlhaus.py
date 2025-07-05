@@ -10,6 +10,7 @@ import json
 import requests
 import argparse
 import re
+import os
 
 __author__ = "Corsin Camichel"
 __copyright__ = "Copyright 2018, Corsin Camichel"
@@ -18,8 +19,10 @@ __version__ = "1.0-20180326"
 __email__ = "cocaman@gmail.com"
 
 url = 'https://urlhaus.abuse.ch/api/'
-api_key = 'YOUR_API_KEY'
-
+api_key = os.getenv("URLHAUS_API_KEY") or "YOUR_HARDCODED_API_KEY"
+if not os.getenv("URLHAUS_API_KEY"):
+    print("WARNING: Using fallback hardcoded API key")
+    
 # helper function to check that a tag has the right format [A-Za-z0-9.-]
 def check_tag_regex(s):
     if s == "":
@@ -38,7 +41,6 @@ parser.add_argument('-d', '--threat', dest='threat', help='Threat type of the UR
 args = parser.parse_args()
 
 json_data = {
-    'token' : api_key,
     'anonymous' : args.anon,
     'submission' : [
         {
@@ -49,6 +51,7 @@ json_data = {
     ]
 }
 headers = {
+    'Auth-Key' : api_key,
     'Content-Type'  :   'application/json',
     'user-agent' : 'URLhaus Python Submission Script'
 }
